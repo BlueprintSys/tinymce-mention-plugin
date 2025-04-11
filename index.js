@@ -1,6 +1,6 @@
-/*global tinymce */
+/*global hugerte */
 
-;(function (tinymce) {
+;(function (hugerte) {
     'use strict';
 
     var noJQuery = function () { };
@@ -199,10 +199,10 @@
 
         this.query = '';
         this.hasFocus = true;
-        this.artifactDropdownClassName = 'tinymce-inline-trace tinymce-inline-trace__dropdown dropdown-menu';
-        this.glossaryDropdownClassName = 'tinymce-glossary-reference tinymce-glossary-reference__dropdown dropdown-menu';
-        this.mentionDropdownClassName = 'rte-autocomplete tinymce-mention dropdown-menu';
-        this.editorClassName = 'tinymce-editor__editor mce-content-body mce-edit-focus';
+        this.artifactDropdownClassName = 'hugerte-inline-trace hugerte-inline-trace__dropdown dropdown-menu';
+        this.glossaryDropdownClassName = 'hugerte-glossary-reference hugerte-glossary-reference__dropdown dropdown-menu';
+        this.mentionDropdownClassName = 'rte-autocomplete hugerte-mention dropdown-menu';
+        this.editorClassName = 'hugerte-editor__editor mce-content-body mce-edit-focus';
 
         this.cleanUpEditor();
 
@@ -276,7 +276,7 @@
                         case 0: // The user has removed the delimiter as well
                             this.cleanUp(true, false);
                             break;
-                        case 1: // The user has removed everything except the delimiter. We need to remove some extra tags that TinyMce adds to keep the autocomplte working
+                        case 1: // The user has removed everything except the delimiter. We need to remove some extra tags that hugerte adds to keep the autocomplte working
                             var caret = this.editor.dom.select('span#autocomplete span#_mce_caret')[0];
                             var searchtext = this.editor.dom.select('span#autocomplete span#autocomplete-searchtext')[0];
 
@@ -548,10 +548,10 @@
             if (this.options.delimiter === '@') {
             return '<ul tabindex="0" class="' + this.mentionDropdownClassName + '"><li class="loading"></li></ul>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '^') {
-                return '<div tabindex="0" class="rte-autocomplete tinymce-glossary-reference"><ul class="' + this.glossaryDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<div tabindex="0" class="rte-autocomplete hugerte-glossary-reference"><ul class="' + this.glossaryDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '#') {
                 // TODO: Will update dropdown look in STOR-19376 once search component dropdown completed
-                return '<div tabindex="0" class="rte-autocomplete tinymce-inline-trace"><ul class="' + this.artifactDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<div tabindex="0" class="rte-autocomplete hugerte-inline-trace"><ul class="' + this.artifactDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             }
         },
 
@@ -565,7 +565,7 @@
             e.stopPropagation();
             e.preventDefault();
 
-            if (e.target.className === "tinymce-inline-trace__show-all") {
+            if (e.target.className === "hugerte-inline-trace__show-all") {
                 this.onSearchAllProjectsClicked();
                 this.editor.focus();
                 return;
@@ -656,7 +656,7 @@
                 var text = this.query;
                 var selection = this.editor.dom.select('span#autocomplete')[0];
 
-                if (selection) {//is the tinymce editor still visible?
+                if (selection) {//is the hugerte editor still visible?
                     var p = document.createElement('p');
                     p.innerText = (delimiterDeleted) ? text : this.options.delimiter + text;
                     var replacement = p.firstChild;
@@ -678,7 +678,7 @@
         cleanUpEditor: function () {
             var selection = this.editor.dom.select('span#autocomplete')[0];
 
-            if (selection) {//is the tinymce editor still visible?
+            if (selection) {//is the hugerte editor still visible?
                 var p = document.createElement('p');
                 var delimiter = selection.firstChild.innerText;
                 var text = selection.lastChild.innerText;
@@ -743,7 +743,7 @@
 
     };
 
-    tinymce.create('tinymce.plugins.Mention', {
+    hugerte.create('hugerte.plugins.Mention', {
 
         init: function (ed) {
 
@@ -781,11 +781,11 @@
             return {
                 longname: 'mention',
                 author: 'Steven Devooght',
-                version: tinymce.majorVersion + '.' + tinymce.minorVersion
+                version: hugerte.majorVersion + '.' + hugerte.minorVersion
             };
         }
     });
 
-    tinymce.PluginManager.add('mention', tinymce.plugins.Mention);
+    hugerte.PluginManager.add('mention', hugerte.plugins.Mention);
 
-}(tinymce));
+}(hugerte));
