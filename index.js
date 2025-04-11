@@ -743,49 +743,51 @@
 
     };
 
-    hugerte.create('hugerte.plugins.Mention', {
+    function plugin() {
+        return {
+            init: function (ed) {
 
-        init: function (ed) {
-
-            var autoComplete,
-                autoCompleteData = ed.getParam('mentions');
-
-            var jsH = new noJQuery();
-
-            // If the delimiter is undefined set default value to ['@'].
-            // If the delimiter is a string value convert it to an array. (backwards compatibility)
-            autoCompleteData.delimiter = (autoCompleteData.delimiter !== undefined) ? !Array.isArray(autoCompleteData.delimiter) ? [autoCompleteData.delimiter] : autoCompleteData.delimiter : ['@'];
-
-            function prevCharIsSpace() {
-                var start = ed.selection.getRng(true).startOffset,
-                    text = ed.selection.getRng(true).startContainer.data || '',
-                    charachter = start > 0 ? text.substr(start - 1, 1) : '';
-
-                return (!!jsH.trim(charachter).length) ? false : true;
-            }
-
-            ed.on('keypress', function (e) {
-                var delimiterIndex = jsH.inArray(String.fromCharCode(e.which || e.keyCode), autoCompleteData.delimiter);
-                if (delimiterIndex > -1 && prevCharIsSpace()) {
-                    if (autoComplete === undefined || (autoComplete.hasFocus !== undefined && !autoComplete.hasFocus)) {
-                        e.preventDefault();
-                        // Clone options object and set the used delimiter.
-                        autoComplete = new AutoComplete(ed, jsH.extend({}, autoCompleteData, { delimiter: autoCompleteData.delimiter[delimiterIndex] }));
-                    }
+                var autoComplete,
+                    autoCompleteData = ed.getParam('mentions');
+    
+                var jsH = new noJQuery();
+    
+                // If the delimiter is undefined set default value to ['@'].
+                // If the delimiter is a string value convert it to an array. (backwards compatibility)
+                autoCompleteData.delimiter = (autoCompleteData.delimiter !== undefined) ? !Array.isArray(autoCompleteData.delimiter) ? [autoCompleteData.delimiter] : autoCompleteData.delimiter : ['@'];
+    
+                function prevCharIsSpace() {
+                    var start = ed.selection.getRng(true).startOffset,
+                        text = ed.selection.getRng(true).startContainer.data || '',
+                        charachter = start > 0 ? text.substr(start - 1, 1) : '';
+    
+                    return (!!jsH.trim(charachter).length) ? false : true;
                 }
-            });
-
-        },
-
-        getInfo: function () {
-            return {
-                longname: 'mention',
-                author: 'Steven Devooght',
-                version: hugerte.majorVersion + '.' + hugerte.minorVersion
-            };
+    
+                ed.on('keypress', function (e) {
+                    var delimiterIndex = jsH.inArray(String.fromCharCode(e.which || e.keyCode), autoCompleteData.delimiter);
+                    if (delimiterIndex > -1 && prevCharIsSpace()) {
+                        if (autoComplete === undefined || (autoComplete.hasFocus !== undefined && !autoComplete.hasFocus)) {
+                            e.preventDefault();
+                            // Clone options object and set the used delimiter.
+                            autoComplete = new AutoComplete(ed, jsH.extend({}, autoCompleteData, { delimiter: autoCompleteData.delimiter[delimiterIndex] }));
+                        }
+                    }
+                });
+    
+            },
+    
+            getInfo: function () {
+                return {
+                    longname: 'mention',
+                    author: 'Steven Devooght',
+                    version: hugerte.majorVersion + '.' + hugerte.minorVersion
+                };
+            }
         }
-    });
+    }
 
-    hugerte.PluginManager.add('mention', hugerte.plugins.Mention);
+    
+    hugerte.PluginManager.add('mention', plugin);
 
 }(hugerte));
