@@ -568,12 +568,15 @@
             if (e.target.className === "hugerte-inline-trace__show-all") {
                 this.onSearchAllProjectsClicked();
                 this.editor.focus();
+                console.log('inside hugerte-inline-trace__show-all');
                 return;
             }
 
             var item = this.jsH.getAllDataAttributes(this.jsH.closest(e.target, 'li'));
 
+            console.log('before isEmptyObject');
             if (!this.jsH.isEmptyObject(item)) {
+                console.log('before select: ' + JSON.stringify(item) );
                 this.select(item);
                 this.cleanUp(false, false);
             }
