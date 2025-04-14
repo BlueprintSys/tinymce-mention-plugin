@@ -636,7 +636,11 @@
         select: function (item) {
             this.editor.focus();
             var selection = this.editor.dom.select('span#autocomplete-container')[0];
+            console.log('selection: ' + JSON.stringify(selection));
             this.editor.dom.remove(selection);
+            var selection1 = this.editor.dom.select('span#autocomplete-container')[0];
+            console.log('after remove: ' + JSON.stringify(selection1));
+            console.log('item: ' + this.insert(item));
             this.editor.execCommand('mceInsertContent', false, this.insert(item));
         },
 
