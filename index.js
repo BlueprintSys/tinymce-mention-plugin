@@ -576,9 +576,12 @@
 
             console.log('before isEmptyObject');
             if (!this.jsH.isEmptyObject(item)) {
-                console.log('before select: ' + JSON.stringify(item) );
-                this.select(item);
-                this.cleanUp(false, false);
+                console.log('before select: ' + JSON.stringify(item));
+                setTimeout(() => {
+                    this.editor.focus();
+                    this.select(item);
+                    this.cleanUp(false, false);
+                }, 500);
             }
         },
 
