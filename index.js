@@ -277,8 +277,8 @@
                             this.cleanUp(true, false);
                             break;
                         case 1: // The user has removed everything except the delimiter. We need to remove some extra tags that hugerte adds to keep the autocomplte working
-                            var caret = this.editor.dom.select('span#autocomplete span#_mce_caret')[0];
-                            var searchtext = this.editor.dom.select('span#autocomplete span#autocomplete-searchtext')[0];
+                            var caret = this.editor.dom.select('span#autocomplete-container span#_mce_caret')[0];
+                            var searchtext = this.editor.dom.select('span#autocomplete-container span#autocomplete-searchtext')[0];
 
                             if (caret && searchtext) {
                                 this.editor.dom.add(caret.parentElement, searchtext);
@@ -632,7 +632,7 @@
 
         select: function (item) {
             this.editor.focus();
-            var selection = this.editor.dom.select('span#autocomplete')[0];
+            var selection = this.editor.dom.select('span#autocomplete-container')[0];
             this.editor.dom.remove(selection);
             this.editor.execCommand('mceInsertContent', false, this.insert(item));
         },
@@ -654,7 +654,7 @@
 
             if (rollback) {
                 var text = this.query;
-                var selection = this.editor.dom.select('span#autocomplete')[0];
+                var selection = this.editor.dom.select('span#autocomplete-container')[0];
 
                 if (selection) {//is the hugerte editor still visible?
                     var p = document.createElement('p');
@@ -676,7 +676,7 @@
         },
 
         cleanUpEditor: function () {
-            var selection = this.editor.dom.select('span#autocomplete')[0];
+            var selection = this.editor.dom.select('span#autocomplete-container')[0];
 
             if (selection) {//is the hugerte editor still visible?
                 var p = document.createElement('p');
@@ -700,7 +700,7 @@
         offset: function () {
             var rtePosition = this.jsH.offset(this.editor.getContainer()),
                 contentAreaPosition = this.jsH.position(this.editor.getContentAreaContainer()),
-                node = this.editor.dom.select("span#autocomplete")[0],
+                node = this.editor.dom.select("span#autocomplete-container")[0],
                 nodePosition = this.jsH.position(node),
                 scrollTop = this.jsH.isIE() ? this.editor.getDoc().documentElement.scrollTop : this.editor.getDoc().body.scrollTop;
 
@@ -723,7 +723,7 @@
         },
 
         offsetInline: function () {
-            var node = this.editor.dom.select("span#autocomplete")[0],
+            var node = this.editor.dom.select("span#autocomplete-container")[0],
                 nodePosition = this.jsH.offset(node);
 
             var showBelow = nodePosition.top < window.innerHeight / 2,
