@@ -73,7 +73,7 @@
             return height;
         },
         position: function (el) {
-            return { left: el.offsetLeft, top: el.offsetTop };
+            return { left: el?.offsetLeft, top: el?.offsetTop };
 
         },
         each: function (obj, callback, args) {
@@ -218,7 +218,7 @@
         renderInput: function () {
             var rawHtml = '<span id="autocomplete">' +
                 '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
-                '<span id="autocomplete-searchtext"><span class="dummy">dddddd</span></span>' +
+                '<span id="autocomplete-searchtext"><span class="dummy">admi</span></span>' +
                 '</span>';
 
             this.editor.execCommand('mceInsertContent', false, rawHtml);
