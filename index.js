@@ -321,7 +321,7 @@
                         break;
                     }
 
-                    const innerText = editorBody.innerText.replace('\ufeff', '');
+                    const innerText = editorBody.innerText.replace('\u200b', '');
 
                     // SPACE (32) is automatically replaced by NO-BREAK SPACE (160) in Chrome
                     if (innerText.length === 1 && (innerText.charCodeAt(0) == 160 || innerText.charCodeAt(0) == 32)) {
@@ -398,7 +398,7 @@
                 return;
             }
 
-            this.query = this.jsH.trim(editorBody.innerText).replace('\ufeff', '');
+            this.query = this.jsH.trim(editorBody.innerText).replace('\u200b', '');
 
             if (this.dropdown === undefined) {
                 this.show();
