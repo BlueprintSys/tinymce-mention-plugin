@@ -1,6 +1,6 @@
 /*global hugerte */
 
-;(function (hugerte) {
+; (function (hugerte) {
     'use strict';
 
     var noJQuery = function () { };
@@ -216,9 +216,9 @@
         constructor: AutoComplete,
 
         renderInput: function () {
-            var rawHtml = '<span id="autocomplete">' +
+            var rawHtml = '<span id="autocomplete-container" style="' + this.options.mentioned_style + '">' +
                 '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
-                '<span id="autocomplete-searchtext"><span class="dummy">admi</span></span>' +
+                '<span id="autocomplete-searchtext"><span class="dummy">\u200b</span></span>' +
                 '</span>';
 
             this.editor.execCommand('mceInsertContent', false, rawHtml);
@@ -234,10 +234,10 @@
 
             document.body.addEventListener('click', this.bodyClickProxy = this.rteLostFocus.bind(this));
             document.addEventListener('scroll', this.rteScroll = function (e) {
-                if(e.target.className !== this.artifactDropdownClassName &&
-                   e.target.className !== this.glossaryDropdownClassName &&
-                   e.target.className !== this.mentionDropdownClassName &&
-                   e.target.className !== this.editorClassName) {
+                if (e.target.className !== this.artifactDropdownClassName &&
+                    e.target.className !== this.glossaryDropdownClassName &&
+                    e.target.className !== this.mentionDropdownClassName &&
+                    e.target.className !== this.editorClassName) {
                     this.cleanUp(false, false);
                 }
             }.bind(this), true);
@@ -389,13 +389,13 @@
 
             if (!editorBody || !editorBody.innerText) {
                 this.cleanUp(false, false);
-                return ;
+                return;
             }
 
             var delimiter = this.editor.getBody().querySelector('#autocomplete-delimiter');
             if (!delimiter || !delimiter.innerText || delimiter.innerText !== this.options.delimiter) {
                 this.cleanUp(true, true);
-                return ;
+                return;
             }
 
             this.query = this.jsH.trim(editorBody.innerText).replace('\ufeff', '');
@@ -546,7 +546,7 @@
 
         renderDropdown: function () {
             if (this.options.delimiter === '@') {
-            return '<ul tabindex="0" class="' + this.mentionDropdownClassName + '"><li class="loading"></li></ul>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<ul tabindex="0" class="' + this.mentionDropdownClassName + '"><li class="loading"></li></ul>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '^') {
                 return '<div tabindex="0" class="rte-autocomplete hugerte-glossary-reference"><ul class="' + this.glossaryDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '#') {
@@ -662,8 +662,8 @@
                     var replacement = p.firstChild;
                     var height = window.getComputedStyle(selection).getPropertyValue("height") === 'auto' ? selection.offsetHeight : window.getComputedStyle(selection).getPropertyValue("height");
 
-                    var focus = !!this.editor.selection && 
-                                (this.jsH.offset(this.editor.selection.getNode()).top === (this.jsH.offset(selection).top + ((selection.offsetHeight - height) / 2)));
+                    var focus = !!this.editor.selection &&
+                        (this.jsH.offset(this.editor.selection.getNode()).top === (this.jsH.offset(selection).top + ((selection.offsetHeight - height) / 2)));
 
                     this.editor.dom.replace(replacement, selection);
 
@@ -708,13 +708,13 @@
                 nodePositionLeft = rtePosition.left + contentAreaPosition.left + nodePosition.left;
 
             var showBelow = nodePositionTop < window.innerHeight / 2,
-                showRight = nodePositionLeft < window.innerWidth * .75;                
+                showRight = nodePositionLeft < window.innerWidth * .75;
 
             return {
                 top: showBelow ? nodePositionTop + 8 + this.jsH.innerHeight(this.editor.selection.getNode()) : null,
                 bottom: showBelow ? null : window.innerHeight - nodePositionTop + 5,
                 left: showRight ? nodePositionLeft : null,
-                right: showRight ? null : window.innerWidth - nodePositionLeft - ( node?.offsetWidth ?? 0) - 13,
+                right: showRight ? null : window.innerWidth - nodePositionLeft - (node?.offsetWidth ?? 0) - 13,
                 arrow: {
                     vertical: (showBelow ? "top" : "bottom"),
                     horizontal: (showRight ? "left" : "right")
@@ -749,21 +749,21 @@
 
                 var autoComplete,
                     autoCompleteData = ed.getParam('mentions');
-    
+
                 var jsH = new noJQuery();
-    
+
                 // If the delimiter is undefined set default value to ['@'].
                 // If the delimiter is a string value convert it to an array. (backwards compatibility)
                 autoCompleteData.delimiter = (autoCompleteData.delimiter !== undefined) ? !Array.isArray(autoCompleteData.delimiter) ? [autoCompleteData.delimiter] : autoCompleteData.delimiter : ['@'];
-    
+
                 function prevCharIsSpace() {
                     var start = ed.selection.getRng(true).startOffset,
                         text = ed.selection.getRng(true).startContainer.data || '',
                         charachter = start > 0 ? text.substr(start - 1, 1) : '';
-    
+
                     return (!!jsH.trim(charachter).length) ? false : true;
                 }
-    
+
                 ed.on('keypress', function (e) {
                     var delimiterIndex = jsH.inArray(String.fromCharCode(e.which || e.keyCode), autoCompleteData.delimiter);
                     if (delimiterIndex > -1 && prevCharIsSpace()) {
@@ -774,9 +774,9 @@
                         }
                     }
                 });
-    
+
             },
-    
+
             getInfo: function () {
                 return {
                     longname: 'mention',
@@ -787,7 +787,7 @@
         }
     }
 
-    
+
     hugerte.PluginManager.add('mention', plugin);
 
 }(hugerte));
