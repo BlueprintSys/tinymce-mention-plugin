@@ -708,13 +708,13 @@
                 nodePositionLeft = rtePosition.left + contentAreaPosition.left + nodePosition.left;
 
             var showBelow = nodePositionTop < window.innerHeight / 2,
-                showRight = nodePositionLeft < window.innerWidth * .75;
+                showRight = nodePositionLeft < window.innerWidth * .75;                
 
             return {
                 top: showBelow ? nodePositionTop + 8 + this.jsH.innerHeight(this.editor.selection.getNode()) : null,
                 bottom: showBelow ? null : window.innerHeight - nodePositionTop + 5,
                 left: showRight ? nodePositionLeft : null,
-                right: showRight ? null : window.innerWidth - nodePositionLeft - node.offsetWidth - 13,
+                right: showRight ? null : window.innerWidth - nodePositionLeft - ( node?.offsetWidth ?? 0) - 13,
                 arrow: {
                     vertical: (showBelow ? "top" : "bottom"),
                     horizontal: (showRight ? "left" : "right")
