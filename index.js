@@ -236,7 +236,14 @@
             document.body.addEventListener('click', (e) => {
                 setTimeout(() => {
                     this.bodyClickProxy = this.rteLostFocus.bind(this);
-                    console.log( this.bodyClickProxy);
+
+                    const target = e.target;
+
+                    const autocomplete = document.querySelector('body > ul.rte-autocomplete');
+                    if (autocomplete && !autocomplete.contains(target)) {                
+                      autocomplete.remove();
+                    }                 
+                  
                 }, 0);
               });
 
