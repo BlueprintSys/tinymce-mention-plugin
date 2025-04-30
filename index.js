@@ -236,6 +236,7 @@
             document.body.addEventListener('click', (e) => {
                 setTimeout(() => {
                     this.bodyClickProxy = this.rteLostFocus.bind(this);
+                    console.log( this.bodyClickProxy);
                 }, 0);
               });
 
