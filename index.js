@@ -232,7 +232,7 @@
             this.editor.on('keydown', this.editorKeyDownProxy = this.rteKeyDown.bind(this), true);
             this.editor.on('click', this.editorClickProxy = this.rteClicked.bind(this));
 
-        //    document.body.addEventListener('click', this.bodyClickProxy = this.rteLostFocus.bind(this));
+            //    document.body.addEventListener('click', this.bodyClickProxy = this.rteLostFocus.bind(this));
             document.body.addEventListener('click', (e) => {
                 setTimeout(() => {
                     this.bodyClickProxy = this.rteLostFocus.bind(this);
@@ -240,12 +240,12 @@
                     const target = e.target;
 
                     const autocomplete = document.querySelector('body > ul.rte-autocomplete');
-                    if (autocomplete && !autocomplete.contains(target)) {                
-                      autocomplete.remove();
-                    }                 
-                  
+                    if (autocomplete && !autocomplete.contains(target)) {
+                        autocomplete.remove();
+                    }
+
                 }, 0);
-              });
+            });
 
             document.addEventListener('scroll', this.rteScroll = function (e) {
                 if (e.target.className !== this.artifactDropdownClassName &&
@@ -588,7 +588,7 @@
 
             var item = this.jsH.getAllDataAttributes(this.jsH.closest(e.target, 'li'));
 
-            
+
             if (!this.jsH.isEmptyObject(item)) {
                 this.select(item);
                 this.cleanUp(false, false);
@@ -663,7 +663,8 @@
             this.hasFocus = false;
             this.onDropdownClose();
 
-            if (this.dropdown !== undefined) {
+            if (this.dropdown !== undefined && this.dropdown !== null &&
+                this.dropdown.parentNode !== undefined && this.dropdown.parentNode !== null) {
                 this.dropdown.parentNode.removeChild(this.dropdown);
 
                 delete this.dropdown;
