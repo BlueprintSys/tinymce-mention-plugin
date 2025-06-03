@@ -1,6 +1,6 @@
-/*global tinymce */
+/*global hugerte */
 
-;(function (tinymce) {
+; (function (hugerte) {
     'use strict';
 
     var noJQuery = function () { };
@@ -73,7 +73,7 @@
             return height;
         },
         position: function (el) {
-            return { left: el.offsetLeft, top: el.offsetTop };
+            return { left: el?.offsetLeft, top: el?.offsetTop };
 
         },
         each: function (obj, callback, args) {
@@ -199,10 +199,10 @@
 
         this.query = '';
         this.hasFocus = true;
-        this.artifactDropdownClassName = 'tinymce-inline-trace tinymce-inline-trace__dropdown dropdown-menu';
-        this.glossaryDropdownClassName = 'tinymce-glossary-reference tinymce-glossary-reference__dropdown dropdown-menu';
-        this.mentionDropdownClassName = 'rte-autocomplete tinymce-mention dropdown-menu';
-        this.editorClassName = 'tinymce-editor__editor mce-content-body mce-edit-focus';
+        this.artifactDropdownClassName = 'hugerte-inline-trace hugerte-inline-trace__dropdown dropdown-menu';
+        this.glossaryDropdownClassName = 'hugerte-glossary-reference hugerte-glossary-reference__dropdown dropdown-menu';
+        this.mentionDropdownClassName = 'rte-autocomplete hugerte-mention dropdown-menu';
+        this.editorClassName = 'hugerte-editor__editor mce-content-body mce-edit-focus';
 
         this.cleanUpEditor();
 
@@ -216,9 +216,9 @@
         constructor: AutoComplete,
 
         renderInput: function () {
-            var rawHtml = '<span id="autocomplete">' +
+            var rawHtml = '<span id="autocomplete-container" style="' + this.options.mentioned_style + '">' +
                 '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
-                '<span id="autocomplete-searchtext"><span class="dummy">\uFEFF</span></span>' +
+                '<span id="autocomplete-searchtext"><span class="dummy">\u200b</span></span>' +
                 '</span>';
 
             this.editor.execCommand('mceInsertContent', false, rawHtml);
@@ -232,12 +232,26 @@
             this.editor.on('keydown', this.editorKeyDownProxy = this.rteKeyDown.bind(this), true);
             this.editor.on('click', this.editorClickProxy = this.rteClicked.bind(this));
 
-            document.body.addEventListener('click', this.bodyClickProxy = this.rteLostFocus.bind(this));
+            //    document.body.addEventListener('click', this.bodyClickProxy = this.rteLostFocus.bind(this));
+            document.body.addEventListener('click', (e) => {
+                setTimeout(() => {
+                    this.bodyClickProxy = this.rteLostFocus.bind(this);
+
+                    const target = e.target;
+
+                    const autocomplete = document.querySelector('body > ul.rte-autocomplete');
+                    if (autocomplete && !autocomplete.contains(target)) {
+                        autocomplete.remove();
+                    }
+
+                }, 0);
+            });
+
             document.addEventListener('scroll', this.rteScroll = function (e) {
-                if(e.target.className !== this.artifactDropdownClassName &&
-                   e.target.className !== this.glossaryDropdownClassName &&
-                   e.target.className !== this.mentionDropdownClassName &&
-                   e.target.className !== this.editorClassName) {
+                if (e.target.className !== this.artifactDropdownClassName &&
+                    e.target.className !== this.glossaryDropdownClassName &&
+                    e.target.className !== this.mentionDropdownClassName &&
+                    e.target.className !== this.editorClassName) {
                     this.cleanUp(false, false);
                 }
             }.bind(this), true);
@@ -276,9 +290,9 @@
                         case 0: // The user has removed the delimiter as well
                             this.cleanUp(true, false);
                             break;
-                        case 1: // The user has removed everything except the delimiter. We need to remove some extra tags that TinyMce adds to keep the autocomplte working
-                            var caret = this.editor.dom.select('span#autocomplete span#_mce_caret')[0];
-                            var searchtext = this.editor.dom.select('span#autocomplete span#autocomplete-searchtext')[0];
+                        case 1: // The user has removed everything except the delimiter. We need to remove some extra tags that hugerte adds to keep the autocomplte working
+                            var caret = this.editor.dom.select('span#autocomplete-container span#_mce_caret')[0];
+                            var searchtext = this.editor.dom.select('span#autocomplete-container span#autocomplete-searchtext')[0];
 
                             if (caret && searchtext) {
                                 this.editor.dom.add(caret.parentElement, searchtext);
@@ -321,7 +335,7 @@
                         break;
                     }
 
-                    const innerText = editorBody.innerText.replace('\ufeff', '');
+                    const innerText = editorBody.innerText.replace('\u200b', '');
 
                     // SPACE (32) is automatically replaced by NO-BREAK SPACE (160) in Chrome
                     if (innerText.length === 1 && (innerText.charCodeAt(0) == 160 || innerText.charCodeAt(0) == 32)) {
@@ -389,16 +403,16 @@
 
             if (!editorBody || !editorBody.innerText) {
                 this.cleanUp(false, false);
-                return ;
+                return;
             }
 
             var delimiter = this.editor.getBody().querySelector('#autocomplete-delimiter');
             if (!delimiter || !delimiter.innerText || delimiter.innerText !== this.options.delimiter) {
                 this.cleanUp(true, true);
-                return ;
+                return;
             }
 
-            this.query = this.jsH.trim(editorBody.innerText).replace('\ufeff', '');
+            this.query = this.jsH.trim(editorBody.innerText).replace('\u200b', '');
 
             if (this.dropdown === undefined) {
                 this.show();
@@ -546,12 +560,12 @@
 
         renderDropdown: function () {
             if (this.options.delimiter === '@') {
-            return '<ul tabindex="0" class="' + this.mentionDropdownClassName + '"><li class="loading"></li></ul>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<ul tabindex="0" class="' + this.mentionDropdownClassName + '"><li class="loading"></li></ul>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '^') {
-                return '<div tabindex="0" class="rte-autocomplete tinymce-glossary-reference"><ul class="' + this.glossaryDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<div tabindex="0" class="rte-autocomplete hugerte-glossary-reference"><ul class="' + this.glossaryDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             } else if (this.options.delimiter === '#') {
                 // TODO: Will update dropdown look in STOR-19376 once search component dropdown completed
-                return '<div tabindex="0" class="rte-autocomplete tinymce-inline-trace"><ul class="' + this.artifactDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
+                return '<div tabindex="0" class="rte-autocomplete hugerte-inline-trace"><ul class="' + this.artifactDropdownClassName + '"><li class="loading"></li></ul></div>'; //need to add a class starting with "mce-" to not make the inline editor disappear
             }
         },
 
@@ -562,10 +576,11 @@
         },
 
         autoCompleteClick: function (e) {
+            e.stopImmediatePropagation();
             e.stopPropagation();
             e.preventDefault();
 
-            if (e.target.className === "tinymce-inline-trace__show-all") {
+            if (e.target.className === "hugerte-inline-trace__show-all") {
                 this.onSearchAllProjectsClicked();
                 this.editor.focus();
                 return;
@@ -573,9 +588,11 @@
 
             var item = this.jsH.getAllDataAttributes(this.jsH.closest(e.target, 'li'));
 
+
             if (!this.jsH.isEmptyObject(item)) {
                 this.select(item);
                 this.cleanUp(false, false);
+
             }
         },
 
@@ -632,7 +649,7 @@
 
         select: function (item) {
             this.editor.focus();
-            var selection = this.editor.dom.select('span#autocomplete')[0];
+            var selection = this.editor.dom.select('span#autocomplete-container')[0];
             this.editor.dom.remove(selection);
             this.editor.execCommand('mceInsertContent', false, this.insert(item));
         },
@@ -646,7 +663,8 @@
             this.hasFocus = false;
             this.onDropdownClose();
 
-            if (this.dropdown !== undefined) {
+            if (this.dropdown !== undefined && this.dropdown !== null &&
+                this.dropdown.parentNode !== undefined && this.dropdown.parentNode !== null) {
                 this.dropdown.parentNode.removeChild(this.dropdown);
 
                 delete this.dropdown;
@@ -654,16 +672,16 @@
 
             if (rollback) {
                 var text = this.query;
-                var selection = this.editor.dom.select('span#autocomplete')[0];
+                var selection = this.editor.dom.select('span#autocomplete-container')[0];
 
-                if (selection) {//is the tinymce editor still visible?
+                if (selection) {//is the hugerte editor still visible?
                     var p = document.createElement('p');
                     p.innerText = (delimiterDeleted) ? text : this.options.delimiter + text;
                     var replacement = p.firstChild;
                     var height = window.getComputedStyle(selection).getPropertyValue("height") === 'auto' ? selection.offsetHeight : window.getComputedStyle(selection).getPropertyValue("height");
 
-                    var focus = !!this.editor.selection && 
-                                (this.jsH.offset(this.editor.selection.getNode()).top === (this.jsH.offset(selection).top + ((selection.offsetHeight - height) / 2)));
+                    var focus = !!this.editor.selection &&
+                        (this.jsH.offset(this.editor.selection.getNode()).top === (this.jsH.offset(selection).top + ((selection.offsetHeight - height) / 2)));
 
                     this.editor.dom.replace(replacement, selection);
 
@@ -676,9 +694,9 @@
         },
 
         cleanUpEditor: function () {
-            var selection = this.editor.dom.select('span#autocomplete')[0];
+            var selection = this.editor.dom.select('span#autocomplete-container')[0];
 
-            if (selection) {//is the tinymce editor still visible?
+            if (selection) {//is the hugerte editor still visible?
                 var p = document.createElement('p');
                 var delimiter = selection.firstChild.innerText;
                 var text = selection.lastChild.innerText;
@@ -700,7 +718,7 @@
         offset: function () {
             var rtePosition = this.jsH.offset(this.editor.getContainer()),
                 contentAreaPosition = this.jsH.position(this.editor.getContentAreaContainer()),
-                node = this.editor.dom.select("span#autocomplete")[0],
+                node = this.editor.dom.select("span#autocomplete-container")[0],
                 nodePosition = this.jsH.position(node),
                 scrollTop = this.jsH.isIE() ? this.editor.getDoc().documentElement.scrollTop : this.editor.getDoc().body.scrollTop;
 
@@ -714,7 +732,7 @@
                 top: showBelow ? nodePositionTop + 8 + this.jsH.innerHeight(this.editor.selection.getNode()) : null,
                 bottom: showBelow ? null : window.innerHeight - nodePositionTop + 5,
                 left: showRight ? nodePositionLeft : null,
-                right: showRight ? null : window.innerWidth - nodePositionLeft - node.offsetWidth - 13,
+                right: showRight ? null : window.innerWidth - nodePositionLeft - (node?.offsetWidth ?? 0) - 13,
                 arrow: {
                     vertical: (showBelow ? "top" : "bottom"),
                     horizontal: (showRight ? "left" : "right")
@@ -723,7 +741,7 @@
         },
 
         offsetInline: function () {
-            var node = this.editor.dom.select("span#autocomplete")[0],
+            var node = this.editor.dom.select("span#autocomplete-container")[0],
                 nodePosition = this.jsH.offset(node);
 
             var showBelow = nodePosition.top < window.innerHeight / 2,
@@ -743,49 +761,51 @@
 
     };
 
-    tinymce.create('tinymce.plugins.Mention', {
+    function plugin() {
+        return {
+            init: function (ed) {
 
-        init: function (ed) {
+                var autoComplete,
+                    autoCompleteData = ed.getParam('mentions');
 
-            var autoComplete,
-                autoCompleteData = ed.getParam('mentions');
+                var jsH = new noJQuery();
 
-            var jsH = new noJQuery();
+                // If the delimiter is undefined set default value to ['@'].
+                // If the delimiter is a string value convert it to an array. (backwards compatibility)
+                autoCompleteData.delimiter = (autoCompleteData.delimiter !== undefined) ? !Array.isArray(autoCompleteData.delimiter) ? [autoCompleteData.delimiter] : autoCompleteData.delimiter : ['@'];
 
-            // If the delimiter is undefined set default value to ['@'].
-            // If the delimiter is a string value convert it to an array. (backwards compatibility)
-            autoCompleteData.delimiter = (autoCompleteData.delimiter !== undefined) ? !Array.isArray(autoCompleteData.delimiter) ? [autoCompleteData.delimiter] : autoCompleteData.delimiter : ['@'];
+                function prevCharIsSpace() {
+                    var start = ed.selection.getRng(true).startOffset,
+                        text = ed.selection.getRng(true).startContainer.data || '',
+                        charachter = start > 0 ? text.substr(start - 1, 1) : '';
 
-            function prevCharIsSpace() {
-                var start = ed.selection.getRng(true).startOffset,
-                    text = ed.selection.getRng(true).startContainer.data || '',
-                    charachter = start > 0 ? text.substr(start - 1, 1) : '';
-
-                return (!!jsH.trim(charachter).length) ? false : true;
-            }
-
-            ed.on('keypress', function (e) {
-                var delimiterIndex = jsH.inArray(String.fromCharCode(e.which || e.keyCode), autoCompleteData.delimiter);
-                if (delimiterIndex > -1 && prevCharIsSpace()) {
-                    if (autoComplete === undefined || (autoComplete.hasFocus !== undefined && !autoComplete.hasFocus)) {
-                        e.preventDefault();
-                        // Clone options object and set the used delimiter.
-                        autoComplete = new AutoComplete(ed, jsH.extend({}, autoCompleteData, { delimiter: autoCompleteData.delimiter[delimiterIndex] }));
-                    }
+                    return (!!jsH.trim(charachter).length) ? false : true;
                 }
-            });
 
-        },
+                ed.on('keypress', function (e) {
+                    var delimiterIndex = jsH.inArray(String.fromCharCode(e.which || e.keyCode), autoCompleteData.delimiter);
+                    if (delimiterIndex > -1 && prevCharIsSpace()) {
+                        if (autoComplete === undefined || (autoComplete.hasFocus !== undefined && !autoComplete.hasFocus)) {
+                            e.preventDefault();
+                            // Clone options object and set the used delimiter.
+                            autoComplete = new AutoComplete(ed, jsH.extend({}, autoCompleteData, { delimiter: autoCompleteData.delimiter[delimiterIndex] }));
+                        }
+                    }
+                });
 
-        getInfo: function () {
-            return {
-                longname: 'mention',
-                author: 'Steven Devooght',
-                version: tinymce.majorVersion + '.' + tinymce.minorVersion
-            };
+            },
+
+            getInfo: function () {
+                return {
+                    longname: 'mention',
+                    author: 'Steven Devooght',
+                    version: hugerte.majorVersion + '.' + hugerte.minorVersion
+                };
+            }
         }
-    });
+    }
 
-    tinymce.PluginManager.add('mention', tinymce.plugins.Mention);
 
-}(tinymce));
+    hugerte.PluginManager.add('mention', plugin);
+
+}(hugerte));
